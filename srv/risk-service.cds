@@ -9,13 +9,8 @@ service RiskService {
     entity Mitigations as projection on rm.Mitigations;
     annotate Mitigations with @odata.draft.enabled;
 
+    // Dummy
     entity Items as projection on rm.Items;
-    
-    function GetRisksByPriority( priority: String ) returns array of Risks;
-
-    function GetAllItems() returns array of Items;
-    
-    action CreateRisk( riskData: Risks ) returns Risks;
 
     // BusinessPartner will be used later
     //@readonly entity BusinessPartners as projection on rm.BusinessPartners;
