@@ -1,0 +1,11 @@
+# Needed to deploy app to space
+applications:
+  - name: risk-management
+    path: /home/user/projects/risk-management
+    buildpack: nodejs_buildpack  
+    memory: 1G  
+    instances: 1
+    routes:
+      - route: risk-management-app.cfapps.us10-001.hana.ondemand.com  
+    env:
+      NPM_CONFIG_NO_UPDATE_NOTIFIER: true  # Getting errors while trying to push app on cloud.
