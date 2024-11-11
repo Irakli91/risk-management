@@ -29,7 +29,6 @@
   },
   "cds": {
     "requires": {
-      "auth": "mocked",
       "API_BUSINESS_PARTNER": {
         "kind": "odata-v2",
         "model": "srv/external/API_BUSINESS_PARTNER",
@@ -38,10 +37,10 @@
         }
       },
       "ONPREM_EXPRESS_APP": {
-      "kind": "rest",
-      "credentials": {
-        "destination": "ONPREM_EXPRESS_APP"
-      }
+        "kind": "rest",
+        "credentials": {
+          "destination": "ONPREM_EXPRESS_APP"
+        }
       },
       "db": {
         "kind": "sqlite",

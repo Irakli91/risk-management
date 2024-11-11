@@ -1,4 +1,3 @@
-
 namespace riskmanagement;
 
 using {
@@ -7,17 +6,17 @@ using {
         sap.common.CodeList
 } from '@sap/cds/common';
 // using an external service from SAP S/4HANA Cloud
-using { API_BUSINESS_PARTNER as external } from '../srv/external/API_BUSINESS_PARTNER.csn';
+using {API_BUSINESS_PARTNER as external} from '../srv/external/API_BUSINESS_PARTNER.csn';
 
 entity Risks : cuid, managed {
-        title                    : String(100);
-        owner                    : String;
-        prio                     : Association to Priority;
-        descr                    : String;
-        miti                     : Association to Mitigations;
-        impact                   : Integer;
-        bp : Association to BusinessPartners;
-        virtual criticality      : Integer;
+        title                   : String(100);
+        owner                   : String;
+        prio                    : Association to Priority;
+        descr                   : String;
+        miti                    : Association to Mitigations;
+        impact                  : Integer;
+        bp                      : Association to BusinessPartners;
+        virtual criticality     : Integer;
         virtual PrioCriticality : Integer;
 }
 
@@ -37,13 +36,15 @@ entity Priority : CodeList {
             };
 }
 
-entity BusinessPartners as projection on external.A_BusinessPartner {
-   key BusinessPartner,
-   BusinessPartnerFullName as FullName,
-}
+entity BusinessPartners as
+        projection on external.A_BusinessPartner {
+                key BusinessPartner,
+                    BusinessPartnerFullName as FullName,
+        }
 
 // Dummy entity
 entity Items : cuid {
-    title    : String;
-    quantity : Integer;
+        title     : String;
+        quantity  : Integer;
+        createdBy : String; // Stores the user ID of the creator
 }

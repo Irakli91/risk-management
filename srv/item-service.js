@@ -17,6 +17,7 @@ module.exports = cds.service.impl(async function() {
         if (quantity > 100) {
              req.error(400, 'Quantity cannot exceed 100.');
         }
+
     });
     
     // Action to create a new item
@@ -29,6 +30,7 @@ module.exports = cds.service.impl(async function() {
             INSERT.into('riskmanagement.Items').entries({
                 title,
                 quantity,
+                createdBy: req.user.id // Automatically set the `createdBy` field
             })
         );
         
