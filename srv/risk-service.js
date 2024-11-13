@@ -9,6 +9,7 @@ module.exports = cds.service.impl(async function () {
 
   this.before("*", (req) => {
     // console.log("cds.env.auth", cds.env.auth.passport.users)
+    console.log('Authorization Header:', req.headers);
     console.log("User Info:", req.user);
     console.log("Roles:", req.user.roles);
   });

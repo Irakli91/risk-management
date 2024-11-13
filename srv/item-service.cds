@@ -5,8 +5,13 @@ using {riskmanagement as rm} from '../db/schema';
 service ItemService {
     @restrict: [
         {
-            grant: 'READ',
-            where: 'createdBy = $user'
+            grant: ['READ', 'CREATE'],
+            where: 'createdBy = $user',
+            to: 'any' // Applies to all users
+        },
+         {
+            grant: ['READ'], 
+            to: 'RiskManager'
         }
     ]
     entity Items as projection on rm.Items;

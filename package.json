@@ -16,7 +16,8 @@
     "@sap/cds": "^8",
     "express": "^4",
     "npm": "^10.9.0",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.0",
+    "@sap/xssec": "^4"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.6",

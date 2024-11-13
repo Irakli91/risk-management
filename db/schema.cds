@@ -43,8 +43,7 @@ entity BusinessPartners as
         }
 
 // Dummy entity
-entity Items : cuid {
-        title     : String;
-        quantity  : Integer;
-        createdBy : String; // Stores the user ID of the creator
+entity Items : cuid, managed {
+        title    : String;
+        quantity : Integer;
 }

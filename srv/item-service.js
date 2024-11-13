@@ -30,7 +30,6 @@ module.exports = cds.service.impl(async function() {
             INSERT.into('riskmanagement.Items').entries({
                 title,
                 quantity,
-                createdBy: req.user.id // Automatically set the `createdBy` field
             })
         );
         
