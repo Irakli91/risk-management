@@ -1,0 +1,104 @@
+_schema-version: 3.3.0
+ID: risk-management
+version: 3.0.0
+description: "Template for the Learning Journey Building side-by-side extensions on SAP BTP"
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+modules:
+  - name: risk-management-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      buildpack: nodejs_buildpack
+      readiness-health-check-type: http
+      readiness-health-check-http-endpoint: /health
+    build-parameters:
+      builder: npm
+    provides:
+      - name: srv-api # Provides the service URL for other modules like the approuter
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: cpapp-destination # Uses the Destination service to connect to external APIs
+      - name: risk-management-db # Connects to the HANA database
+      - name: cpapp-xsuaa # Uses the XSUAA service for authentication and authorization
+      - name: connectivity-instance # Uses the Connectivity service for on-premise access
+
+  - name: risk-management-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+      memory: 1G
+    build-parameters:
+      environment:
+        NPM_CONFIG_NO_UPDATE_NOTIFIER: "true" # Prevents npm update notifications during deployment
+    requires:
+      - name: risk-management-db # Deploys database artifacts to the HANA database
+
+  - name: risk-management
+    type: approuter.nodejs
+    path: app/
+    parameters:
+      keep-existing-routes: true
+      disk-quota: 1G
+      memory: 1G
+    build-parameters:
+      ignore: ["default-env.json", ".env"]
+    requires:
+      - name: srv-api # Connects to the backend service (CAP service)
+        group: destinations
+        properties:
+          name: srv-api # Defines the destination name in xs-app.json
+          url: ~{srv-url}
+          forwardAuthToken: true # Ensures the user token is forwarded for authorization
+      - name: cpapp-xsuaa # Handles authentication and user roles
+      - name: cpapp-destination # Enables the approuter to connect to external services
+      - name: connectivity-instance # Allows approuter to access on-premise resources
+
+resources:
+  - name: cpapp-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite # Provides a lightweight plan for connecting to external APIs and systems
+
+  - name: risk-management-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared # Creates an HDI container to store database tables, views, and data
+
+  - name: cpapp-xsuaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application # Manages user authentication and authorization
+      path: ./xs-security.json # Defines scopes and roles in the application
+      config:
+        xsappname: cpapp-xsuaa-${org}-${space} # Unique name for the XSUAA instance
+        tenant-mode: dedicated # Ensures the instance is tenant-specific
+        role-collections:
+        - name: 'RiskManager-${org}-${space}' # Role collection for users managing risks
+          description: Manage Risks
+          role-template-references:
+          - $XSAPPNAME.RiskManager
+        - name: 'RiskViewer-${org}-${space}' # Role collection for users viewing risks
+          description: View Risks
+          role-template-references:
+          - $XSAPPNAME.RiskViewer
+        oauth2-configuration:
+          redirect-uris:
+            - https://**.hana.ondemand.com/login/callback # Callback URL for authentication
+
+  - name: connectivity-instance
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: connectivity
+      service-plan: lite # Enables secure access to on-premise systems

@@ -1,4 +1,3 @@
-// Import the cds facade object (https://cap.cloud.sap/docs/node.js/cds-facade)
 const cds = require("@sap/cds");
 const { getDestination } = require("@sap-cloud-sdk/connectivity");
 
